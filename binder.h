@@ -22,7 +22,7 @@ public:
     class level_id;
     class worm;
     
-//private:    
+private:    
            
     #include "switcher.h"    
     typedef std::vector<std::shared_ptr<switcher>> shared_switchers_type;

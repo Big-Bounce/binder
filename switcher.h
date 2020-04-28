@@ -1,5 +1,5 @@
 class switcher {
-public:
+
     struct child_type {
         std::weak_ptr<switcher> _child;
         unsigned _counter;
