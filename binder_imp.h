@@ -1,8 +1,10 @@
+#include <iostream>
+
 template <typename T, typename U, typename V, typename W, typename X>
 binder<T,U,V,W,X>::binder(const std::string& name): _name(name), _available(true) {
 
-    std::shared_ptr<switcher> initial_switcher(std::make_shared<switcher> (*this));
- //   _stars.emplace_back(new star(initial_switcher));
+    std::shared_ptr<switcher> initial_switcher(std::make_shared<switcher> (*this));   
+    //   _stars.emplace_back(new star(initial_switcher));
  //   _current_star.push(0);       
     
 }
@@ -40,7 +42,7 @@ void binder<T,U,V,W,X>::get_back(worm& to_update) {
     to_update.pop_back_levels_stack();
     to_update._updated_channel_value = false;
 }
-
+*/
 template <typename T, typename U, typename V, typename W, typename X> 
 template <typename Y>
 size_t binder<T,U,V,W,X>::_empty_position(const Y& container) {
@@ -54,19 +56,22 @@ size_t binder<T,U,V,W,X>::_empty_position(const Y& container) {
 }
 
 template <typename T, typename U, typename V, typename W, typename X>
-typename binder<T,U,V,W,X>::level_id binder<T,U,V,W,X>::create_level(const U& description, const std::vector<T>& data) {
+template <typename Y>
+typename binder<T,U,V,W,X>::level_id binder<T,U,V,W,X>::create_level(const U& value, const Y& data) {
     
     switchers_type initial_data;
     initial_data.reserve(data.size());
-    for (size_t i = 0; i < data.size(); ++i)
-        initial_data.emplace_back(std::make_shared<switcher> (this, data[i]));    
-    std::shared_ptr<level> initial_level(std::make_shared<level> (description, initial_data));
+    
+    auto _lambda = [&initial_data, this] (const T& arg) {
+        initial_data.emplace_back(std::make_shared<switcher> (arg, this));
+    };
+    std::for_each(data.begin(), data.end(), _lambda);
         
     size_t i = _empty_position(_free_levels);
     if (i == _free_levels.size())
-        _free_levels.emplace_back(initial_level);
+        _free_levels.emplace_back(value, initial_data);
     else
-        _free_levels[i] = initial_level;
+        _free_levels[i] = std::shared_ptr<level> (std::make_shared<level> (value, initial_data));
     
     level_id id;
     id._level_number = i;
@@ -83,7 +88,7 @@ void binder<T,U,V,W,X>::erase_level(level_id id) {
         throw level_is_beeing_used();    
     _free_levels[id._level_number].reset();
 }
-
+/*
 template <typename T, typename U, typename V, typename W, typename X>
 void binder<T,U,V,W,X>::add_level(level_id lid, channel_id cid, size_t pos) {
     
@@ -158,13 +163,13 @@ void binder<T,U,V,W,X>::set_channel_value(channel_id id, const V& value) {
         throw channel_does_not_exist();        
     std::shared_ptr<channel> (id._object) -> set_value(value);
 }
-
+*/
 template <typename T, typename U, typename V, typename W, typename X>
 void binder<T,U,V,W,X>::_lid_assert(const typename binder<T,U,V,W,X>::level_id& lid) {
     assert(lid._level_number < _free_levels.size());
-    std::shared_ptr<level> (lid._object)  == _free_levels[lid._level_number];
+    lid._object.lock()  == _free_levels[lid._level_number];
 }
-
+/*
 template <typename T, typename U, typename V, typename W, typename X>
 void binder<T,U,V,W,X>::go(worm& to_update) {
     _available = false;

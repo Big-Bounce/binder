@@ -20,7 +20,7 @@ public:
     void add_child(const std::weak_ptr<switcher> &);
     void remove_child(const std::weak_ptr<switcher> &);
     void go(worm&);
-    inline const T& value() const {return _value;}
+    inline const T& get_value() const {return _value;}
     
 };
 

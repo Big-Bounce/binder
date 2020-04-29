@@ -6,5 +6,5 @@ class channel_id {
 class level_id {
     friend binder;
     size_t _level_number;    
-//    std::weak_ptr<level> _object;
+    std::weak_ptr<level> _object;
 };

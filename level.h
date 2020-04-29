@@ -1,6 +1,6 @@
 class level {
          
-    U _description;
+    U _value;
     switchers_type _switchers;
     
 public:
@@ -15,7 +15,7 @@ public:
     size_t find_switcher(const std::weak_ptr<switcher>&);    
     
     inline size_t size() const {return _switchers.size();}
-    inline const U& description() const {return _description;}
+    inline const U& get_value() const {return _value;}
     inline const switchers_type& get_switchers() const {return _switchers;}
     
     void go(worm&);
