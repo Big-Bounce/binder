@@ -55,7 +55,7 @@ public:
     //void get_back(worm&);
     
     template<typename Y> level_id create_level(const U&, const Y&);
-    void erase_level(level_id);
+    void erase_level(const level_id&);
     //void add_level(level_id, channel_id, size_t pos = 1);
     //void remove_level(level_id, channel_id);
     //void set_channel_value(channel_id, const V&);

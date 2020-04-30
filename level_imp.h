@@ -10,7 +10,7 @@ template<typename T, typename U, typename V, typename W, typename X>
 void binder<T,U,V,W,X>::level::connect(const std::shared_ptr<level>& newlevel) {
 
     typedef typename switchers_type::iterator iter_type;
-    auto _lambda = [&newlevel] (const std::shared_ptr<level>& arg) {
+    auto _lambda = [&newlevel] (const std::shared_ptr<switcher>& arg) {
         for (iter_type iter = newlevel->_switchers.begin(); iter != newlevel->_switchers.end(); ++iter)
             arg -> add_child(*iter);
     };
@@ -22,7 +22,7 @@ template<typename T, typename U, typename V, typename W, typename X>
 void binder<T,U,V,W,X>::level::disconnect(const std::shared_ptr<level>& oldlevel) {
     
     typedef typename switchers_type::iterator iter_type;
-    auto _lambda = [&oldlevel] (const std::shared_ptr<level>& arg) {
+    auto _lambda = [&oldlevel] (const std::shared_ptr<switcher>& arg) {
         for (iter_type iter = oldlevel->_switchers.begin(); iter != oldlevel->_switchers.end(); ++iter)
             arg -> remove_child(*iter);
     };

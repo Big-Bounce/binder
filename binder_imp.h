@@ -62,17 +62,17 @@ typename binder<T,U,V,W,X>::level_id binder<T,U,V,W,X>::create_level(const U& va
     switchers_type initial_data;
     initial_data.reserve(data.size());
     
-    auto _lambda = [&initial_data, this] (const T& arg) {
-        initial_data.emplace_back(std::make_shared<switcher> (arg, this));
+    auto _lambda = [this, &initial_data] (const T& val) {
+        initial_data.emplace_back(std::make_shared<switcher> (*this, val));
     };
     std::for_each(data.begin(), data.end(), _lambda);
         
     size_t i = _empty_position(_free_levels);
     if (i == _free_levels.size())
-        _free_levels.emplace_back(value, initial_data);
+        _free_levels.emplace_back(std::make_shared<level> (value, initial_data));
     else
         _free_levels[i] = std::shared_ptr<level> (std::make_shared<level> (value, initial_data));
-    
+
     level_id id;
     id._level_number = i;
     id._object = _free_levels[i];
@@ -80,7 +80,7 @@ typename binder<T,U,V,W,X>::level_id binder<T,U,V,W,X>::create_level(const U& va
 }
 
 template <typename T, typename U, typename V, typename W, typename X>
-void binder<T,U,V,W,X>::erase_level(level_id id) {
+void binder<T,U,V,W,X>::erase_level(const level_id& id) {
     if (id._object.expired())
         throw level_does_not_exist();
     _lid_assert(id);
