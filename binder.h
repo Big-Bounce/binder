@@ -31,14 +31,14 @@ private:
     
     #include "level.h"
     typedef std::vector<std::shared_ptr<level>> levels_type;    
-/*    
+    
     typedef std::stack<size_t> currents_type;
     #include "star.h"    
     typedef std::vector<std::unique_ptr<star>> stars_type;    
-*/    
+    
     std::string _name;
-    //stars_type _stars;
-    //currents_type _current_star;
+    stars_type _stars;
+    currents_type _current_star;
     levels_type _free_levels;
     bool _available;
     
@@ -67,7 +67,7 @@ public:
 #include "switcher_imp.h"
 #include "channel_imp.h"
 #include "level_imp.h"
-//#include "star_imp.h"
+#include "star_imp.h"
 #include "binder_imp.h"
 
 #endif

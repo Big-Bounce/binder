@@ -4,7 +4,7 @@ class channel {
     size_t _newstar;        
 public:
 
-    channel(const std::weak_ptr<switcher>&, const V&, size_t);
+    channel(const std::weak_ptr<switcher>&, const V& = V());
     
     inline const V& get_value() const {return _value;}
     inline size_t get_newstar() const {return _newstar;}
