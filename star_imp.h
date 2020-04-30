@@ -27,9 +27,9 @@ void binder<T,U,V,W,X>::star::add_level(const std::shared_ptr<level>& newlevel, 
         preserve = false; 
         
     if (preserve)
-        _preserve_channels;
+        _preserve_channels();
     else
-        _clear_channels;
+        _clear_channels();
     
 }
 
@@ -49,9 +49,9 @@ size_t binder<T,U,V,W,X>::star::remove_level(size_t position, bool preserve) {
     _levels.erase(_levels.begin() + position);
 
     if (preserve)
-        _preserve_channels;
+        _preserve_channels();
     else
-        _clear_channels;
+        _clear_channels();
     return _levels.size();
 }
 
@@ -117,7 +117,7 @@ void binder<T,U,V,W,X>::star::get_back() {
 template <typename T, typename U, typename V, typename W, typename X>
 bool binder<T,U,V,W,X>::star::is_available() {
     auto my_lambda = [] (std::shared_ptr<channel>& to_check) {
-        return to_check -> newstar();
+        return to_check -> get_newstar();
     };
     return ! std::any_of(_channels.begin(), _channels.end(), my_lambda);
 }
@@ -168,7 +168,7 @@ void binder<T,U,V,W,X>::star::_preserve_channels() {
 
 template <typename T, typename U, typename V, typename W, typename X>
 bool binder<T,U,V,W,X>::star::is_level_present(const std::shared_ptr<level>& to_check) {
-    return ! std::find(_levels.begin(), _levels.end(), to_check) == _levels.end();
+    return ! (std::find(_levels.begin(), _levels.end(), to_check) == _levels.end());
 }
 
 template <typename T, typename U, typename V, typename W, typename X>
