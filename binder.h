@@ -40,34 +40,41 @@ private:
     stars_type _stars;
     currents_type _current_star;
     levels_type _free_levels;
-    bool _available;
+    bool _ready;
     
     template <typename Y> size_t _empty_position(const Y&);    
+    template <typename Y> void _cut_tail(Y&);    
     void _lid_assert(const level_id&);
     
 public:    
     #include "id.h"
     #include "worm.h"    
-    
+
     binder(const std::string& = std::string());
 
-    //bool check_switcher(std::weak_ptr<switcher>&, worm&);
-    //void get_back(worm&);
+    bool check_switcher(std::weak_ptr<switcher>&, worm&);
+    void get_back(worm&);
     
     template<typename Y> level_id create_level(const U&, const Y&);
     void erase_level(const level_id&);
-    //void add_level(level_id, channel_id, size_t pos = 1);
-    //void remove_level(level_id, channel_id);
-    //void set_channel_value(channel_id, const V&);
-    //void go(worm&);
-    //channel_id get_initial_channel();
-
+    
+    void add_level(level_id, channel_id, size_t pos = 1);
+    void remove_level(level_id, channel_id);
+    
+    void set_channel_value(channel_id, const V&);
+    V get_channel_value(channel_id);
+    
+    void go(worm&);
+    channel_id get_initial_channel();
+    
 };
+
 
 #include "switcher_imp.h"
 #include "channel_imp.h"
 #include "level_imp.h"
 #include "star_imp.h"
+#include "worm_imp.h"
 #include "binder_imp.h"
 
 #endif

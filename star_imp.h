@@ -2,7 +2,7 @@
 #include <algorithm>
 
 template <typename T, typename U, typename V, typename W, typename X>
-binder<T,U,V,W,X>::star::star(const std::shared_ptr<switcher>& initial_switcher): _current_level(0), 
+binder<T,U,V,W,X>::star::star(const std::shared_ptr<switcher>& initial_switcher): _current_level(0),
     _channels(1, std::shared_ptr<channel> (std::make_shared<channel> (initial_switcher))) {
     
     switchers_type initial;
@@ -57,63 +57,57 @@ size_t binder<T,U,V,W,X>::star::remove_level(size_t position, bool preserve) {
 
 template <typename T, typename U, typename V, typename W, typename X>
 bool binder<T,U,V,W,X>::star::is_switcher_present(const std::weak_ptr<switcher>& to_check) {
-    if (_current_level+1 < _levels.size() && _levels[_current_level+1] -> has_switcher(to_check)) {
-        ++ _current_level;
+    if (_current_level+1 < _levels.size() && _levels[_current_level+1] -> has_switcher(to_check))
         return true;
-    }
     return false;
 }
 
 template <typename T, typename U, typename V, typename W, typename X>
-const U& binder<T,U,V,W,X>::star::get_level_value() {
-    assert(_current_level < _levels.size());
-    return _levels[_current_level] -> value();
-}
-
-template <typename T, typename U, typename V, typename W, typename X>
-bool binder<T,U,V,W,X>::star::is_channel_present(const std::weak_ptr<switcher>& to_check) {
+void binder<T,U,V,W,X>::star::prepare_to_go(const std::weak_ptr<switcher>& to_check) {
+    assert(is_switcher_present(to_check));
+    ++_current_level;
     
     size_t left = _current_left.top();
     size_t right = _current_right.top();            
     
     assert(left <= right);
-    assert(right < _levels.size());
+    assert(right < _channels.size());
         
     size_t position = _levels[_current_level] -> find_switcher(to_check);
-    _current_left.push(left + position/_levels.size()*_channels.size());    
-    _current_right.push(right + (position+1)/_levels.size()*_channels.size() - 1);
-    
+    size_t csize = right - left + 1;
+    size_t lsize = _levels[_current_level] -> size();
+    _current_left.push(left + position*csize/lsize);    
+    _current_right.push(left + (position+1)*csize/lsize - 1);   
+
+}
+
+template <typename T, typename U, typename V, typename W, typename X>
+bool binder<T,U,V,W,X>::star::is_channel_present() {
     assert(_current_left.top() <= _current_right.top());
-    assert(_current_left.top() < _levels.size());   
-    
+    assert(_current_left.top() < _channels.size());       
     return _current_left.top() == _current_right.top();
 }
 
 template <typename T, typename U, typename V, typename W, typename X>
-const V& binder<T,U,V,W,X>::star::get_channel_value() {
-    assert(_current_left.top() == _current_right.top());
-    return _channels[_current_left.top()] -> value();    
-}
-
-template <typename T, typename U, typename V, typename W, typename X>
 bool binder<T,U,V,W,X>::star::is_newstar_present() {
-    assert(_current_left.top() == _current_right.top());
-    return _channels[_current_left.top()] -> newstar();    
+    assert(is_channel_present());
+    return _channels[_current_left.top()] -> get_newstar();    
 }
 
 template <typename T, typename U, typename V, typename W, typename X>
 size_t binder<T,U,V,W,X>::star::get_newstar() {
-    assert(_channels[_current_left.top()] -> newstar());
-    return _channels[_current_left.top()] -> newstar();    
+    assert(_channels[_current_left.top()] -> get_newstar());
+    return _channels[_current_left.top()] -> get_newstar();    
 }
-/*
+
 template <typename T, typename U, typename V, typename W, typename X>
 void binder<T,U,V,W,X>::star::get_back() {
+    assert(_current_left.size() > 1 && _current_right.size() > 1 && _current_level);
     _current_left.pop();
     _current_right.pop();
     -- _current_level;
 }
-*/
+
 template <typename T, typename U, typename V, typename W, typename X>
 bool binder<T,U,V,W,X>::star::is_available() {
     auto my_lambda = [] (std::shared_ptr<channel>& to_check) {
@@ -132,17 +126,14 @@ void binder<T,U,V,W,X>::star::_clear_channels() {
     _channels.clear();
     _channels.reserve(newsize);
     
-    const switchers_type edges = _levels[_levels.size() - 1] -> get_switchers();
-    channels_type input;
-    input.reserve(edges.size());
-    for (size_t i = 0; i < edges.size(); ++i)
-        input.emplace_back(std::make_shared<channel> (edges[i], V()));
-        
-    typename channels_type::iterator iter = _channels.begin();    
+    const switchers_type edges = _levels[_levels.size() - 1] -> get_switchers();        
     while (_channels.size() < newsize) {
-        _channels.insert(iter, input.cbegin(), input.cend());
-        iter += input.size();
+        for (size_t i = 0; i < edges.size(); ++i)
+            _channels.emplace_back(std::make_shared<channel> (edges[i]));
     }
+    
+    assert(_current_left.size() == 1 && _current_right.size() == 1 && !_current_left.top());
+    _current_right.top() = _channels.size() - 1;
     
 }
 
@@ -159,10 +150,14 @@ void binder<T,U,V,W,X>::star::_preserve_channels() {
         return;
     }
 
-    _channels.reserve(newsize);    
+    _channels.reserve(newsize);
     size_t oldsize = _channels.size();
-    while (_channels.size() < newsize) 
-        _channels.insert(_channels.end(), _channels.begin(), _channels.begin() + oldsize);   
+    while (_channels.size() < newsize)
+        for (size_t i = 0; i < oldsize; ++i)
+            _channels.emplace_back(std::make_shared<channel>(_channels[i]->get_edge(),_channels[i]->get_value()));
+    
+    assert(_current_left.size() == 1 && _current_right.size() == 1 && !_current_left.top());
+    _current_right.top() = _channels.size() - 1;
     
 } 
 
@@ -182,7 +177,18 @@ size_t binder<T,U,V,W,X>::star::get_level_position(const std::shared_ptr<level>&
 
 template <typename T, typename U, typename V, typename W, typename X>
 typename std::shared_ptr<typename binder<T,U,V,W,X>::channel>&
-binder<T,U,V,W,X>::star::get_initial_channel() {
-    assert(_channels.size() == 1);
-    return _channels[0];
+binder<T,U,V,W,X>::star::get_channel() {
+    assert(_current_left.top() == _current_right.top());
+    return _channels[_current_left.top()];
+}
+
+template <typename T, typename U, typename V, typename W, typename X>
+void binder<T,U,V,W,X>::star::go(worm& to_update) {
+    _levels[0] -> go(to_update);
+}
+
+template <typename T, typename U, typename V, typename W, typename X>
+const U& binder<T,U,V,W,X>::star::get_level_value(size_t lev) {
+    assert(lev < _levels.size());
+    return _levels[lev] -> get_value();
 }

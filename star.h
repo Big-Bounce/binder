@@ -24,21 +24,21 @@ public:
     size_t get_level_position(const std::shared_ptr<level>&);
         
     bool is_switcher_present(const std::weak_ptr<switcher>&);
-    const U& get_level_value();
-       
-    bool is_channel_present(const std::weak_ptr<switcher>&);
-    const V& get_channel_value();
+    void prepare_to_go(const std::weak_ptr<switcher>&);
+    
+    bool is_channel_present();
+    std::shared_ptr<channel>& get_channel();
     
     bool is_newstar_present();
     size_t get_newstar();
     
-    //void get_back();
-    //inline void go(worm& to_update) {_levels[0] -> go(to_update);}       
+    void get_back();
+    void go(worm&);
     
     bool is_available();
     inline size_t size() const {return _levels.size();}
     inline size_t get_current_level() const {return _current_level;}    
-    std::shared_ptr<channel>& get_initial_channel();
+    const U& get_level_value(size_t);
 };
 
 

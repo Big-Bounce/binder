@@ -45,21 +45,20 @@ void binder<T,U,V,W,X>::switcher::remove_child(const std::weak_ptr<switcher> & o
     else
         -- iter -> _counter;  //child will be still present
 }    
-/*
+
 template<typename T, typename U, typename V, typename W, typename X>
 void binder<T,U,V,W,X>::switcher::go(worm& to_update) {
     
-    std::shared_ptr<binder> mybinder(_mybinder);
-    
-    auto go_deeper = [&mybinder, &to_update] (child_type& child) {
-        if (mybinder -> check_switcher(child._child, to_update)) {
-            std::shared_ptr<switcher> (child._child) -> go(to_update);
-            mybinder -> get_back(to_update);
+    auto go_deeper = [this, &to_update] (child_type& child) {
+        if (_mybinder.check_switcher(child._child, to_update)) {
+            to_update.process();
+            child._child.lock() -> go(to_update);
+            _mybinder.get_back(to_update);
         }
             
     };
     std::for_each(_children.begin(), _children.end(), go_deeper);
     
 }
-*/    
+    
     
