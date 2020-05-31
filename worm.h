@@ -6,6 +6,7 @@ class worm {
     std::weak_ptr<channel> _current_channel;
     channel_id _id;
     bool _am_i_in_channel;    
+    bool _am_i_done;
     
 protected:  
    
@@ -17,6 +18,7 @@ protected:
     void set_channel_value(const T&);
     
     inline bool am_i_in_channel() const {return _am_i_in_channel;}        
+    inline bool am_i_done() const {return _am_i_done;}        
     
 public: 
     worm(): _am_i_in_channel(false) {}

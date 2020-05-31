@@ -29,15 +29,17 @@ bool binder<T,U,V,W,X>::check_switcher(std::weak_ptr<switcher>& to_check, worm& 
         to_update._current_channel.reset(); //... and clear worm's channel - related data
         to_update._id._object.reset();
         to_update._am_i_in_channel = false;
+        to_update._am_i_done = false;
         
         //check if channel is present
-        if (_stars[top] -> is_channel_present()) //if it is, check if star change will be necessery
-            if (!_stars[top] -> is_newstar_present()) { //if not, update worm's channel - related data
-                to_update._current_channel =  _stars[top] -> get_channel();
-                to_update._id._object = _stars[top] -> get_channel();
-                to_update._am_i_in_channel = true;
-            }
-            
+        if (_stars[top] -> is_channel_present()) { //if it is, update worm's channel-related data
+            to_update._current_channel =  _stars[top] -> get_channel();
+            to_update._id._object = _stars[top] -> get_channel();
+            to_update._am_i_in_channel = true;            
+            if (!_stars[top] -> is_newstar_present()) //check if star change will be necessery
+                to_update._am_i_done = true;
+        }
+                        
         return true;
             
     }
