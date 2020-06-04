@@ -115,7 +115,7 @@ void binder<T,U,V,W,X>::erase_level(const level_id& id) {
 }
 
 template <typename T, typename U, typename V, typename W, typename X>
-void binder<T,U,V,W,X>::add_level(level_id lid, channel_id cid, size_t pos) {
+void binder<T,U,V,W,X>::add_level(level_id& lid, channel_id& cid, size_t pos) {
     
     if (!_ready)
         throw traversal_is_in_operation();
@@ -152,7 +152,7 @@ void binder<T,U,V,W,X>::add_level(level_id lid, channel_id cid, size_t pos) {
 }
 
 template <typename T, typename U, typename V, typename W, typename X>
-void binder<T,U,V,W,X>::remove_level(level_id lid, channel_id cid) {
+void binder<T,U,V,W,X>::remove_level(level_id& lid, channel_id& cid) {
     
     if (!_ready)
         throw traversal_is_in_operation();    
@@ -191,14 +191,14 @@ void binder<T,U,V,W,X>::remove_level(level_id lid, channel_id cid) {
 }
 
 template <typename T, typename U, typename V, typename W, typename X>
-void binder<T,U,V,W,X>::set_channel_value(channel_id id, const V& value) {
+void binder<T,U,V,W,X>::set_channel_value(channel_id& id, const V& value) {
     if (id._object.expired())
         throw channel_does_not_exist();        
     id._object.lock() -> set_value(value);
 }
 
 template <typename T, typename U, typename V, typename W, typename X>
-V binder<T,U,V,W,X>::get_channel_value(channel_id id) {
+V binder<T,U,V,W,X>::get_channel_value(channel_id& id) {
     if (id._object.expired())
         throw channel_does_not_exist();        
     return id._object.lock() -> get_value();

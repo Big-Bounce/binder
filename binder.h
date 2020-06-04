@@ -58,14 +58,16 @@ public:
     template<typename Y> level_id create_level(const U&, const Y&);
     void erase_level(const level_id&);
     
-    void add_level(level_id, channel_id, size_t pos = 1);
-    void remove_level(level_id, channel_id);
+    void add_level(level_id&, channel_id&, size_t pos = 1);
+    void remove_level(level_id&, channel_id&);
     
-    void set_channel_value(channel_id, const V&);
-    V get_channel_value(channel_id);
+    void set_channel_value(channel_id&, const V&);
+    V get_channel_value(channel_id&);
     
     void go(worm&);
     channel_id get_initial_channel();
+    
+    inline bool is_balanced() const {return _stars.size() <= 2;}
     
 };
 
