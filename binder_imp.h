@@ -18,7 +18,7 @@ bool binder<T,U,V,W,X>::check_switcher(std::weak_ptr<switcher>& to_check, worm& 
     //check if star change is necessery
     if (_stars[_current_star.top()] -> is_channel_present())
         if (_stars[_current_star.top()] -> is_newstar_present())
-            _current_star.push(_stars[_current_star.top()] -> get_newstar());
+            _current_star.push(_stars[_current_star.top()] -> get_newstar());        
     size_t top = _current_star.top();
     
     //check if switcher is present on current star's next level
@@ -27,12 +27,20 @@ bool binder<T,U,V,W,X>::check_switcher(std::weak_ptr<switcher>& to_check, worm& 
         to_update._switchers_values.push_back (to_check.lock() -> get_value()); //... update worm's data ... 
         to_update._levels_values.push_back(_stars[top] -> get_level_value(_stars[top] -> get_current_level()));        
         to_update._current_channel.reset(); //... and clear worm's channel - related data
+        to_update._initial_channel.reset();
         to_update._id._object.reset();
+        to_update._initial_id._object.reset();
         to_update._am_i_in_channel = false;
         to_update._am_i_done = false;
         
         //check if channel is present
         if (_stars[top] -> is_channel_present()) { //if it is, update worm's channel-related data
+            //initial (per star) channel data
+            _current_star.pop();
+            to_update._initial_channel = _stars[_current_star.top()] -> get_channel();
+            to_update._initial_id._object = _stars[_current_star.top()] -> get_channel();            
+            //current channel data
+            _current_star.push(top);
             to_update._current_channel =  _stars[top] -> get_channel();
             to_update._id._object = _stars[top] -> get_channel();
             to_update._am_i_in_channel = true;            
