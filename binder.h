@@ -7,6 +7,7 @@
 #include <string>
 #include <stack>
 #include "exceptions.h"
+#include <map>
 
 template <typename T, typename U, typename V, typename W = std::vector<T>, typename X = std::vector<U>> 
 //T - switcher value type
@@ -30,11 +31,11 @@ private:
     #include "channel.h"
     
     #include "level.h"
-    typedef std::vector<std::shared_ptr<level>> levels_type;    
+    typedef std::map<size_t, std::shared_ptr<level>> levels_type;
     
     typedef std::stack<size_t> currents_type;
     #include "star.h"    
-    typedef std::vector<std::unique_ptr<star>> stars_type;    
+    typedef std::map<size_t, std::unique_ptr<star>> stars_type;
     
     std::string _name;
     stars_type _stars;
@@ -44,6 +45,7 @@ private:
     
     template <typename Y> size_t _empty_position(const Y&);    
     template <typename Y> void _cut_tail(Y&);    
+    template <typename Y> size_t _lowest_index(const std::map<size_t, Y>&);
     void _lid_assert(const level_id&);
     
 public:    

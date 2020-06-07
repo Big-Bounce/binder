@@ -35,3 +35,8 @@ struct cannot_remove_level_from_this_channel: public binder_exceptions {
 struct traversal_is_in_operation: public binder_exceptions {
     const char* what() const {return "Traversal is in operation :(";}
 };
+
+struct size_limit_reached: public binder_exceptions {
+    const char* what() const {return "Size limit reached :(";}
+};
+

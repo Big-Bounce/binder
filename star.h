@@ -3,7 +3,8 @@
 class star {
 
     typedef std::vector<std::shared_ptr<channel>> channels_type;
-   
+    typedef std::vector<std::shared_ptr<level>> levels_type;
+    
     levels_type _levels;
     channels_type _channels;
     size_t _current_level;
