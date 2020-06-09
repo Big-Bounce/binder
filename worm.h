@@ -21,8 +21,8 @@ protected:
     V get_channel_value();
     V get_initial_channel_value();
     
-    void set_channel_value(const T&);
-    void set_initial_channel_value(const T&);
+    void set_channel_value(const V&);
+    void set_initial_channel_value(const V&);
     
     inline bool am_i_in_channel() const {return _am_i_in_channel;}        
     inline bool am_i_done() const {return _am_i_done;}        
